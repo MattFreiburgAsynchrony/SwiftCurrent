@@ -1,0 +1,36 @@
+(source_file "MangleAndLowering.swift"
+  (protocol range=[MangleAndLowering.swift:1:8 - line:18:1] "FlowRepresentable" interface type='FlowRepresentable.Protocol' access=public non-resilient requirement signature=<Self>
+    (associated_type_decl range=[MangleAndLowering.swift:3:5 - line:3:36] "WorkflowInput" interface type='Self.WorkflowInput.Type' access=public default=Never overridden=)
+    (associated_type_decl range=[MangleAndLowering.swift:5:5 - line:5:37] "WorkflowOutput" interface type='Self.WorkflowOutput.Type' access=public default=Never overridden=)
+    (constructor_decl range=[MangleAndLowering.swift:13:5 - line:13:10] "init()" interface type='<Self where Self : FlowRepresentable> (Self.Type) -> () -> Self' access=public designated
+      (parameter "self")
+      (parameter_list range=[MangleAndLowering.swift:13:9 - line:13:10]))
+    (func_decl range=[MangleAndLowering.swift:17:5 - line:17:69] "_factory(_:)" <FR : FlowRepresentable> interface type='<Self, FR where Self : FlowRepresentable, FR : FlowRepresentable> (Self.Type) -> (FR.Type) -> FR' access=public type
+      (parameter "self")
+      (parameter_list range=[MangleAndLowering.swift:17:48 - line:17:64]
+        (parameter "type" type='FR.Type' interface type='FR.Type'))
+      (result
+        (type_ident
+          (component id='FR' bind=MangleAndLowering.(file).FlowRepresentable._factory(_:).FR@MangleAndLowering.swift:17:26)))))
+  (struct_decl range=[MangleAndLowering.swift:20:1 - line:24:1] "ViewThing" interface type='ViewThing.Type' access=internal non-resilient inherits: FlowRepresentable
+    (func_decl range=[MangleAndLowering.swift:21:5 - line:23:5] "_factory(_:)" <FR : FlowRepresentable> interface type='<FR where FR : FlowRepresentable> (ViewThing.Type) -> (FR.Type) -> FR' access=internal captures=(<generic> ) type
+      (parameter "self")
+      (parameter_list range=[MangleAndLowering.swift:21:48 - line:21:64]
+        (parameter "type" type='FR.Type' interface type='FR.Type'))
+      (result
+        (type_ident
+          (component id='FR' bind=MangleAndLowering.(file).ViewThing._factory(_:).FR@MangleAndLowering.swift:21:26)))
+      (brace_stmt range=[MangleAndLowering.swift:21:72 - line:23:5]
+        (return_stmt range=[MangleAndLowering.swift:22:9 - line:22:26]
+          (call_expr type='FR' location=MangleAndLowering.swift:22:21 range=[MangleAndLowering.swift:22:16 - line:22:26] nothrow arg_labels=
+            (constructor_ref_call_expr type='() -> FR' location=MangleAndLowering.swift:22:21 range=[MangleAndLowering.swift:22:16 - line:22:21] nothrow
+              (declref_expr type='(FR.Type) -> () -> FR' location=MangleAndLowering.swift:22:21 range=[MangleAndLowering.swift:22:21 - line:22:21] decl=MangleAndLowering.(file).FlowRepresentable.init()@MangleAndLowering.swift:13:5 [with (substitution_map generic_signature=<Self where Self : FlowRepresentable> (substitution Self -> FR))] function_ref=single)
+              (declref_expr type='FR.Type' location=MangleAndLowering.swift:22:16 range=[MangleAndLowering.swift:22:16 - line:22:16] decl=MangleAndLowering.(file).ViewThing._factory(_:).type@MangleAndLowering.swift:21:51 function_ref=unapplied))
+            (tuple_expr type='()' location=MangleAndLowering.swift:22:25 range=[MangleAndLowering.swift:22:25 - line:22:26])))))
+    (constructor_decl implicit range=[MangleAndLowering.swift:20:8 - line:20:8] "init()" interface type='(ViewThing.Type) -> () -> ViewThing' access=internal designated
+      (parameter "self")
+      (parameter_list)
+      (brace_stmt implicit range=[MangleAndLowering.swift:20:8 - line:20:8]
+        (return_stmt range=[MangleAndLowering.swift:20:8 - line:20:8])))
+    (typealias implicit "WorkflowInput" access=internal type='Never')
+    (typealias implicit "WorkflowOutput" access=internal type='Never')))
