@@ -22,7 +22,7 @@ struct SwiftUIExampleApp: App {
         DataDriven.shared.register(key: ContentView.self, creating: ExtendedFlowRepresentableMetadata(flowRepresentableType: ContentView.self))
         DataDriven.register(type: LoginView.self)
         print(DataDriven.shared.registryDescription)
-        print(DataDriven.shared.getAllFlowRepresentableViewTypes())
+        print(DataDriven.shared.flowRepresentableViewTypes)
 
         do {
             startingWorkflow = try DataDriven.shared.getWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"])
@@ -131,22 +131,36 @@ open class DataDriven {
         return 0
     }
 
-    func getAllFlowRepresentableViewTypes() -> [Any.Type] {
-//        let views = types
-//            .compactMap { $0 as? StructDescriptor }
-//            .compactMap { $0.accessor(.complete) }
-//            .compactMap { $0.metadata as? StructMetadata }
-//            .filter { $0.conformances.contains { $0.protocol.name == String(describing: View.self) }}
-
-        let registeredViews = [Any.Type]()
+    func differentAttemptsAtConvertingFromDescriptorToType() -> [Any.Type] {
+        let views = types
+            .filter { !$0.flags.isGeneric }
+            .compactMap { $0 as? StructDescriptor }
+            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
+            .compactMap { $0.metadata as? StructMetadata }
+            .filter { $0.conformances.contains { $0.protocol.name == String(describing: View.self) }}
+            .compactMap { $0.type }
 
         let structDescriptors = types
             .compactMap { $0 as? StructDescriptor }
+//            .filter { $0.parentModuleDescriptor?.name == "SwiftUIExample" }
+
+        let modules = structDescriptors
+            .compactMap { $0.parentModuleDescriptor?.name }
+        
+        let structNames = structDescriptors
+            .compactMap { $0.name }
+        print("structNames: \(structNames.count)")
+
+        let nonGenericStructs = structDescriptors
+            .filter { !$0.flags.isGeneric }
+        let nonGenericNames = nonGenericStructs
+            .compactMap { $0.name }
+        print("nonGenericNames: \(nonGenericNames.count)")
 
         var metadataResponses = [MetadataResponse]()
 //        _ = structDescriptors
 //            .compactMap { $0.accessor(.complete, Any.self) } //.metadata as? StructMetadata }
-        for descriptor in structDescriptors {
+        for descriptor in nonGenericStructs {
             print(descriptor.name)
             let response = descriptor.accessor(MetadataRequest(state: .abstract))
             metadataResponses.append(contentsOf: [response])
@@ -160,7 +174,31 @@ open class DataDriven {
             .filter { $0?.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) } == true }
 
 
-        return registeredViews
+        return flowRepresentables.compactMap { $0?.type }
+    }
+
+    var flowRepresentableViewTypes: [Any.Type] {
+        types
+            .filter { !$0.flags.isGeneric }
+            .compactMap { $0 as? StructDescriptor }
+            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
+            .compactMap { $0.metadata as? StructMetadata }
+            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
+            .compactMap { $0.type }
+    }
+}
+
+extension ContextDescriptor {
+    var parentModuleDescriptor: ModuleDescriptor? {
+        if parent == nil {
+            if self is ModuleDescriptor {
+                return self as? ModuleDescriptor
+            } else {
+                fatalError("No parent module found for: this thing")
+            }
+        } else {
+            return self.parent?.parentModuleDescriptor
+        }
     }
 }
 
@@ -182,6 +220,8 @@ struct OverlyAbstracted: CombinationFRThing {
         }
     }
 }
+
+struct GenericAbstractedView<OUTPUT> {}
 
 struct IndirectConformance {
     /// The type of data coming into the `FlowRepresentable`; defaulted to `Never`; `Never`means the `FlowRepresentable` will ignore data passed in from the `Workflow`.
