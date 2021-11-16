@@ -85,6 +85,7 @@
 		D7A6CE8026E039EE00599824 /* TestEnumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A6CE7F26E039EE00599824 /* TestEnumerations.swift */; };
 		D7A6CE8126E03ADD00599824 /* TestEnumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A6CE7F26E039EE00599824 /* TestEnumerations.swift */; };
 		D7B2E7A2270F6EDD00262519 /* GenericOnboardingViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B2E7A1270F6EDD00262519 /* GenericOnboardingViewTests.swift */; };
+		D7D6048F273F099300F58145 /* Echo in Frameworks */ = {isa = PBXBuildFile; productRef = D7D6048E273F099300F58145 /* Echo */; };
 		D7DBD1FB26CD920700F1E39B /* MockOrchestrationResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD1F526CD920700F1E39B /* MockOrchestrationResponder.swift */; };
 		D7DBD1FC26CD920700F1E39B /* ViewControllerAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD1F626CD920700F1E39B /* ViewControllerAdditions.swift */; };
 		D7DBD1FD26CD920700F1E39B /* AnyWorkflowAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD1F726CD920700F1E39B /* AnyWorkflowAdditions.swift */; };
@@ -207,6 +208,7 @@
 				CAC34B8426A080910039A373 /* SwiftCurrent in Frameworks */,
 				CAC34B7D26A0803C0039A373 /* CodeScanner in Frameworks */,
 				CAD0269A26A0BE390075B818 /* Swinject in Frameworks */,
+				D7D6048F273F099300F58145 /* Echo in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,6 +531,7 @@
 				CAC34B8326A080910039A373 /* SwiftCurrent */,
 				CAD0269926A0BE390075B818 /* Swinject */,
 				CA6FB0DF26C6AD7900FB3285 /* SwiftCurrent_UIKit */,
+				D7D6048E273F099300F58145 /* Echo */,
 			);
 			productName = SwiftUIExample;
 			productReference = CAC34B3F26A07F830039A373 /* SwiftUIExample.app */;
@@ -615,6 +618,7 @@
 				CAC34B7B26A0803C0039A373 /* XCRemoteSwiftPackageReference "CodeScanner" */,
 				CAD0269826A0BE390075B818 /* XCRemoteSwiftPackageReference "Swinject" */,
 				CA6FB0E526C6ADCD00FB3285 /* XCRemoteSwiftPackageReference "UIUTest" */,
+				D7D6048D273F099300F58145 /* XCRemoteSwiftPackageReference "Echo" */,
 			);
 			productRefGroup = CAC34B4026A07F830039A373 /* Products */;
 			projectDirPath = "";
@@ -1083,6 +1087,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		D7D6048D273F099300F58145 /* XCRemoteSwiftPackageReference "Echo" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Azoy/Echo.git";
+			requirement = {
+				branch = "swift-5.3";
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1125,6 +1137,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CAD0269826A0BE390075B818 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
+		};
+		D7D6048E273F099300F58145 /* Echo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D6048D273F099300F58145 /* XCRemoteSwiftPackageReference "Echo" */;
+			productName = Echo;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

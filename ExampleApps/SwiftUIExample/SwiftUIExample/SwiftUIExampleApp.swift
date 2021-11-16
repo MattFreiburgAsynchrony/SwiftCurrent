@@ -5,7 +5,7 @@
 //  Created by Tyler Thompson on 7/15/21.
 //
 //  Copyright © 2021 WWT and Tyler Thompson. All rights reserved.
-
+// swiftlint:disable all
 import SwiftUI
 import Swinject
 import SwiftCurrent_SwiftUI
@@ -15,12 +15,14 @@ struct SwiftUIExampleApp: App {
     let startingWorkflow: AnyWorkflow
 
     init() {
+        DataDriven.shared.exploringEcho()
         Container.default.register(UserDefaults.self) { _ in UserDefaults.standard }
 
         DataDriven.shared.register(ExtendedFlowRepresentableMetadata(flowRepresentableType: SwiftCurrentOnboarding.self), for: "SwiftCurrentOnboarding")
         DataDriven.shared.register(key: ContentView.self, creating: ExtendedFlowRepresentableMetadata(flowRepresentableType: ContentView.self))
         DataDriven.register(type: LoginView.self)
         print(DataDriven.shared.registryDescription)
+        print(DataDriven.shared.getAllFlowRepresentableViewTypes())
 
         do {
             startingWorkflow = try DataDriven.shared.getWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"])
@@ -49,6 +51,7 @@ struct SwiftUIExampleApp: App {
 }
 
 import SwiftCurrent
+import Echo
 /// Manages ``FlowRepresentable`` types that will be driven through data.
 open class DataDriven {
     // I don't like this.
@@ -106,4 +109,112 @@ open class DataDriven {
     enum Error: Swift.Error {
         case unregisteredType
     }
+
+    // MARK: Reflection (Echo) stuff
+    func exploringEcho() -> Int {
+//        let allTypes = types
+//        let allProtocols = protocols
+
+        let structs = types.compactMap { $0 as? StructDescriptor }
+
+        let names = structs.map { $0.name }
+
+        let frProtocols = protocols.filter { $0.name.contains("FlowRepresentable") }
+
+        let overlyAbstractedMetadata = reflect(OverlyAbstracted.self) as? TypeMetadata
+
+        structs.first?.parent
+
+        // (structs[7].accessor(.complete, Any.self).metadata as? StructMetadata)?.conformances[2].protocol.name // should say FlowRepresentable
+        // (structs[7].accessor(.complete, Any.self).metadata as? StructMetadata)?.type // Should be type: Any.Type of some SwiftUIExample.OverlyAbstracted
+
+        return 0
+    }
+
+    func getAllFlowRepresentableViewTypes() -> [Any.Type] {
+//        let views = types
+//            .compactMap { $0 as? StructDescriptor }
+//            .compactMap { $0.accessor(.complete) }
+//            .compactMap { $0.metadata as? StructMetadata }
+//            .filter { $0.conformances.contains { $0.protocol.name == String(describing: View.self) }}
+
+        let registeredViews = [Any.Type]()
+
+        let structDescriptors = types
+            .compactMap { $0 as? StructDescriptor }
+
+        var metadataResponses = [MetadataResponse]()
+//        _ = structDescriptors
+//            .compactMap { $0.accessor(.complete, Any.self) } //.metadata as? StructMetadata }
+        for descriptor in structDescriptors {
+            print(descriptor.name)
+            let response = descriptor.accessor(MetadataRequest(state: .abstract))
+            metadataResponses.append(contentsOf: [response])
+        }
+
+        var metadata = [StructMetadata?]()
+        metadataResponses
+            .forEach { metadata.append($0.metadata as? StructMetadata) }
+
+        let flowRepresentables = metadata
+            .filter { $0?.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) } == true }
+
+
+        return registeredViews
+    }
+}
+
+protocol CombinationFRThing: View, FlowRepresentable {
+
+}
+
+protocol NoOneConformsToThis {}
+
+struct OverlyAbstracted: CombinationFRThing {
+    var _workflowPointer: AnyFlowRepresentable?
+
+    var body: some View {
+        VStack {
+            Text("This thing is wack yo")
+            Button("Proceed") {
+                proceedInWorkflow()
+            }
+        }
+    }
+}
+
+struct IndirectConformance {
+    /// The type of data coming into the `FlowRepresentable`; defaulted to `Never`; `Never`means the `FlowRepresentable` will ignore data passed in from the `Workflow`.
+    typealias WorkflowInput = Never
+    /// The type of data passed forward from the `FlowRepresentable`; defaulted to `Never`; `Never` means data will not be passed forward.
+    typealias WorkflowOutput = Never
+
+    /**
+     A pointer to the `AnyFlowRepresentable` that erases this `FlowRepresentable`; will automatically be set.
+
+     ### Discussion
+     This property is automatically set by a `Workflow`; it simply needs to be declared on a `FlowRepresentable`.
+     In order for a `FlowRepresentable` to have access to the `Workflow` that launched it, store the closures for proceeding forward and backward, and provide type safety. It needs this property available for writing.
+
+     #### Note
+     While not strictly necessary, it would be wise to declare this property as `weak`.
+     */
+    var _workflowPointer: AnyFlowRepresentable?
+
+    /**
+     Creates a `FlowRepresentable`.
+
+     #### Note
+     This is auto-synthesized by FlowRepresentable, and is only called when `WorkflowInput` is `Never`.
+     */
+    init() {}
+    /// Creates a `FlowRepresentable` with the specified `WorkflowInput`.
+    init(with args: WorkflowInput) {}
+
+    // No public docs necessary, as this should not be used by consumers.
+    // swiftlint:disable:next missing_docs
+    static func _factory<FR: FlowRepresentable>(_ type: FR.Type) -> FR { return Self() as! FR }
+    // No public docs necessary, as this should not be used by consumers.
+    // swiftlint:disable:next missing_docs
+    static func _factory<FR: FlowRepresentable>(_ type: FR.Type, with args: WorkflowInput) -> FR { return Self() as! FR }
 }
