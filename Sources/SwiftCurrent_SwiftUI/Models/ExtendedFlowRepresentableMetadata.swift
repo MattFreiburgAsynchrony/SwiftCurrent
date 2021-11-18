@@ -45,3 +45,10 @@ public class ExtendedFlowRepresentableMetadata: FlowRepresentableMetadata {
     /// The type name for the underlying ``FlowRepresentable``
     public let underlyingTypeDescription: String
 }
+
+@available(iOS 14.0, macOS 11, tvOS 14.0, watchOS 7.0, *)
+extension FlowRepresentable where Self: View {
+    public static func getMetadata() -> FlowRepresentableMetadata {
+        ExtendedFlowRepresentableMetadata(flowRepresentableType: self)
+    }
+}

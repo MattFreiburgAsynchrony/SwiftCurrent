@@ -18,11 +18,15 @@ struct SwiftUIExampleApp: App {
         DataDriven.shared.exploringEcho()
         Container.default.register(UserDefaults.self) { _ in UserDefaults.standard }
 
-        DataDriven.shared.register(ExtendedFlowRepresentableMetadata(flowRepresentableType: SwiftCurrentOnboarding.self), for: "SwiftCurrentOnboarding")
-        DataDriven.shared.register(key: ContentView.self, creating: ExtendedFlowRepresentableMetadata(flowRepresentableType: ContentView.self))
-        DataDriven.register(type: LoginView.self)
-        print(DataDriven.shared.registryDescription)
+//        DataDriven.shared.register(ExtendedFlowRepresentableMetadata(flowRepresentableType: SwiftCurrentOnboarding.self), for: "SwiftCurrentOnboarding")
+//        DataDriven.shared.register(key: ContentView.self, creating: ExtendedFlowRepresentableMetadata(flowRepresentableType: ContentView.self))
+//        DataDriven.register(type: LoginView.self)
         print(DataDriven.shared.flowRepresentableViewTypes)
+
+        let EFRMs = DataDriven.shared.flowRepresentableViewTypes.compactMap { ($0 as? TylerMetadata.Type)?.getMetadata() }
+
+        DataDriven.shared.register(EFRMs[0] as! ExtendedFlowRepresentableMetadata, for: String(describing: DataDriven.shared.flowRepresentableViewTypes[0]))
+        print(DataDriven.shared.registryDescription)
 
         do {
             startingWorkflow = try DataDriven.shared.getWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"])

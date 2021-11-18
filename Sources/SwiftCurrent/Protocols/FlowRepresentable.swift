@@ -8,6 +8,10 @@
 
 import Foundation
 
+public protocol TylerMetadata {
+    static func getMetadata() -> FlowRepresentableMetadata
+}
+
 /**
  A component in a `Workflow`; should be independent of the workflow context.
  
@@ -46,7 +50,7 @@ import Foundation
  }
  ```
  */
-public protocol FlowRepresentable {
+public protocol FlowRepresentable: TylerMetadata {
     /// The type of data coming into the `FlowRepresentable`; defaulted to `Never`; `Never`means the `FlowRepresentable` will ignore data passed in from the `Workflow`.
     associatedtype WorkflowInput = Never
     /// The type of data passed forward from the `FlowRepresentable`; defaulted to `Never`; `Never` means data will not be passed forward.
@@ -92,10 +96,13 @@ public protocol FlowRepresentable {
      #### Note
      Returning `false` can have different behaviors depending on the `FlowPersistence`.
      */
-    func shouldLoad() -> Bool
 }
 
 extension FlowRepresentable {
+    public static func getMetadata() -> FlowRepresentableMetadata {
+        FlowRepresentableMetadata(self) { _ in .default }
+    }
+
     // No public docs necessary, as this should not be used by consumers.
     // swiftlint:disable:next missing_docs
     public var _workflowUnderlyingInstance: Any { self }
