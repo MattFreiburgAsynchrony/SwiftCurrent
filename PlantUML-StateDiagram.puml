@@ -59,6 +59,11 @@ state FR10 {
   state "FR10\nPresentationType" : NavigationStack
 }
 
+state FR11 {
+  state "FlowPersistence" as FR11.FlowPersistence : RemovedAfterProceeding
+  state "PresentationType" as FR11.PresentationType : NavigationStack
+}
+
 FR1 -> FR2
 FR2 -> FR3
 FR3 --> FR8
@@ -68,6 +73,7 @@ FR5 --> FR6
 FR6 -left-> FR7
 FR7 --> FR9
 FR9 -left-> FR10
+FR10 --> FR11
 
 
 state SelectOnlineOptionScreen
