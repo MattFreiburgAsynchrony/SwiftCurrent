@@ -1,0 +1,75 @@
+@startuml
+' STYLE START
+hide empty members
+skinparam shadowing false
+' STYLE END
+
+
+class "ChangeEmailView" as ChangeEmailView << (S, SkyBlue) struct >> { 
+  -currentEmail : String
+  ~inspection
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~init(with:)
+  ~body : some View 
+}
+class "ChangePasswordView" as ChangePasswordView << (S, SkyBlue) struct >> { 
+  -oldPassword
+  -newPassword
+  -confirmNewPassword
+  -submitted
+  -errors
+  ~inspection
+  -currentPassword : String
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~init(with:)
+  ~body : some View
+  -validateOldPassword(_:)
+  -validatePassword(_:) 
+}
+class "MFAView" as MFAView << (S, SkyBlue) struct >> { 
+  ~pushSent
+  ~enteredCode
+  ~errorMessage : ErrorMessage?
+  -id
+  ~inspection
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~body : some View 
+}
+class "MFAView" as MFAView0 << (X, Orchid) extension >> {  
+}
+class "ProfileFeatureView" as ProfileFeatureView << (S, SkyBlue) struct >> { 
+  ~inspection
+  -{static} userDefaults : UserDefaults!
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~body : some View
+  -clearUserDefaults() 
+}
+class "AccountInformationView" as AccountInformationView << (S, SkyBlue) struct >> { 
+  ~password
+  ~email
+  ~emailWorkflowLaunched
+  ~passwordWorkflowLaunched
+  ~inspection
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~body : some View 
+}
+class "ProfileFeatureOnboardingView" as ProfileFeatureOnboardingView << (S, SkyBlue) struct >> { 
+  ~inspection
+  ~_workflowPointer : AnyFlowRepresentable?
+  ~body : some View
+  -onboardingView : GenericOnboardingView
+  ~shouldLoad() 
+}
+class "OnboardingData" as OnboardingData << (X, Orchid) extension >> { 
+  {static} profileFeature 
+}
+' FlowRepresentable <|-- ChangeEmailView : inherits
+' FlowRepresentable <|-- ChangePasswordView : inherits
+' PassthroughFlowRepresentable <|-- MFAView : inherits
+' FlowRepresentable <|-- ProfileFeatureView : inherits
+' FlowRepresentable <|-- AccountInformationView : inherits
+' PassthroughFlowRepresentable <|-- ProfileFeatureOnboardingView : inherits
+
+ProfileFeatureOnboardingView -> ProfileFeatureView
+ProfileFeatureView -> AccountInformationView
+@enduml

@@ -1,0 +1,80 @@
+@startuml PERT
+left to right direction
+' Horizontal lines: -->, <--, <-->
+' Vertical lines: ->, <-, <->
+title Object Diagram Syntax
+
+' MAPS
+map FR1 {
+    FlowPersistence => RemovedAfterProceeding
+    PresentationType => NavigationStack
+}
+map FR2 {
+    FlowPersistence => RemovedAfterProceeding
+    PresentationType => NavigationStack
+}
+map FR3 {
+    FlowPersistence => RemovedAfterProceeding
+    PresentationType => NavigationStack
+}
+map FlowRepresentable4 {
+    Type => FR4
+    FlowPersistence => RemovedAfterProceeding
+    PresentationType => NavigationStack
+}
+
+FR1 --> FR2
+FR2 -> FR3
+FR3 --> FlowRepresentable4
+
+' OBJECTS
+object FR5 {
+  FlowPersistence = RemovedAfterProceeding
+  PresentationType = NavigationStack
+}
+
+object FR6 {
+  FlowPersistence.removedAfterProceeding
+  PresentationType.navigationStack
+}
+
+object FR7 {
+  ..FlowPersistence..
+  RemovedAfterProceeding
+  
+  ..PresentationType..
+  NavigationStack
+}
+
+object FR8 {
+  --FlowPersistence--
+  RemovedAfterProceeding
+
+  --PresentationType--
+  NavigationStack
+}
+
+object FR9 {
+  __FlowPersistence__
+  RemovedAfterProceeding
+
+  __PresentationType__
+  NavigationStack
+}
+
+FR5 --> FR6
+FR6 -> FR7
+FR7 --> FR8
+FR8 -> FR9
+
+' CLASSES
+class ChangeEmailView {
+    --Conformance--
+    FlowRepresentable
+    __
+    typealias WorkflowOutput = String
+    typealias WorkflowInput = String
+}
+
+
+@enduml

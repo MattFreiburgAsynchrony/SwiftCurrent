@@ -1,0 +1,73 @@
+@startuml
+' Basic Workflow in an Activity Diagram
+' start
+' :FR1;
+' :FR2;
+' :FR3;
+' :FR4;
+' end
+
+
+' shouldLoad defined example in an Activity Diagram
+!pragma useVerticalIf off
+start
+if (are options between Online and Offline) then (true)
+  :SelectOnlineOptionScreen;
+else (false)
+endif
+
+if (isOffline and multiple Locations available) then (true)
+ :SelectPhysicalLocationView;
+else (false)
+endif
+
+:SelectEventType;
+:SelectDateAndTime;
+
+if (is logged in) then (true)
+else (false)
+ :LoginOrSignup;
+endif
+
+if (is a known user) then (true)
+else (false)
+ :GatherBasicUserInfo;
+endif
+
+:ConfirmEvent;
+:LongLoadingScreen that is removed on proceeding;
+:IrreversableCompletionScreen;
+stop
+
+
+
+
+
+
+
+' object defined example in an Activity Diagram
+!pragma useVerticalIf off
+start
+
+card SelectOnlineOptionScreen {
+ if (hasOptionsBetweenOnlineAndOffline) then (true)
+ else (false)
+ endif
+}
+
+
+end
+
+
+
+
+' what if objects are presentation types?
+partition PresentationType {
+note: Something
+ :FR1;
+ :FR2;
+}
+card SecondPresentationType {
+ :FR3;
+}
+@enduml
