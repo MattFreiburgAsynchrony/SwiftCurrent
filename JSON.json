@@ -1,0 +1,59 @@
+{
+    "name": "SimpleFlowWithLoginWalls",
+    "version": "0.0.1",
+    "sequence": [
+        {
+            "flowRepresentableName": "LoginWall",
+            "persistence": "removedAfterProceeding" // <---- Unclear in an Android world which persistence this means.
+        },
+        {
+            "flowRepresentable": "CoreSwiftCurrentFR1",
+            "flowPersistence": {
+                "style": "removedAfterProceeding" // <--- "style" for consistency with Launch, but I'm not in love with it.  "selection" maybe?
+            }
+        },
+        {
+            "flowRepresentable": "CoreSwiftCurrentFR2",
+            "FlowPersistence": {
+                "selection": "removedAfterProceeding"
+            },
+            "Override-shouldLoad": false // <--- This doesn't look right yet.  Perhaps an Override key with an array of objects?
+        },
+        {
+            "flowRepresentable": "UIKitFR3",
+            "FlowPersistence": {
+                "style": "removedAfterProceeding"
+            },
+            "LaunchStyle": {
+                "style": "navigationStack"
+            }
+        },
+        {
+            "flowRepresentable": "UIKitFR4",
+            "FlowPersistence": "persistWhenSkipped",
+            "LaunchStyle": {
+                "style": "modal",
+                "substyle": "fullscreen"
+            }
+        },
+        {
+            "flowRepresentable": "LoginWall",
+            "FlowPersistence": "removedAfterProceeding" // <---- Inhibits my ability to define more or conditionally.
+        },
+        {
+            "flowRepresentable": "DefaultedFR6"
+        }
+    ]
+}
+
+// notes on Android naming
+// - Types will probably align with Fragments. So calling the type a FlowRepresentable holds the most accurately between iOS and Android
+// - Persistence by itself could lead to confusion of what that persistence is referring to.  You have to maintain your own view persistence in Android so are you talking that or the workflow.
+// - FlowPersistence makes the most sense to me here as it is explicitely talking about the concept of FlowPersistence in regard to the workflow. Android may want a separate ability to define persistence of the view itself in this context, and leaving that naming open would be helpful.
+// - LaunchStyle of NavigationStack and Modal should both hold.  Having additional types of modal styles is also helpful, but NavigationStack could also have the need for sub-typing for a SPA versus navigation.  Both would make sense as Navigation in Android.
+// - Android may want the ability to define DeepLinks in these definitions, and that might be useful for iOS as well in the future.
+
+// High level thoughts for web
+// - Persistence is probably also a confusing term. What it would more likely attribute to is History. You are deciding if a page is part of your history or not.
+// - navigationStack is probably your default setting, but what you are wanting to define is should it add to the breadcrumbs/path or should it replace the existing entry, or should it be without updating the URL or breadcrumbs.
+// - Modal is weird because that's not really a launching but instead a presentation?  As in you will probably not do further navigation in a pure Web modal... not to say you can't.  It's just going to be a bit weird in launch for web, I think...

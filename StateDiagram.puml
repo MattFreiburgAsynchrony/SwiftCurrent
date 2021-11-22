@@ -1,0 +1,61 @@
+state CoreSwiftCurrentFR1.shouldLoad <<choice>>
+state CoreSwiftCurrentFR2.shouldLoad <<choice>>
+state UIKitFR3.shouldLoad <<choice>>
+state UIKitFR4.shouldLoad <<choice>>
+state DefaultedFR6.shouldLoad <<choice>>
+
+note left of CoreSwiftCurrentFR1.shouldLoad
+ shouldLoad()
+end note
+note left of CoreSwiftCurrentFR2.shouldLoad
+ shouldLoad()
+end note
+note left of UIKitFR3.shouldLoad
+ shouldLoad()
+end note
+note left of UIKitFR4.shouldLoad
+ shouldLoad()
+end note
+note left of DefaultedFR6.shouldLoad
+ shouldLoad()
+end note
+
+CoreSwiftCurrentFR1.shouldLoad -> CoreSwiftCurrentFR1 : true
+CoreSwiftCurrentFR2.shouldLoad -> CoreSwiftCurrentFR2 : true
+UIKitFR3.shouldLoad -> UIKitFR3 : true
+UIKitFR4.shouldLoad -> UIKitFR4 : true
+DefaultedFR6.shouldLoad -> DefaultedFR6 : true
+
+CoreSwiftCurrentFR1 --> CoreSwiftCurrentFR2.shouldLoad : proceedInWorkflow
+CoreSwiftCurrentFR2 --> UIKitFR3.shouldLoad : proceedInWorkflow
+UIKitFR3 --> UIKitFR4.shouldLoad : proceedInWorkflow
+UIKitFR4 --> DefaultedFR6.shouldLoad : proceedInWorkflow
+DefaultedFR6 --> [*] : proceedInWorkflow
+
+state CoreSwiftCurrentFR1 {
+    state "FlowPersistence" as CoreSwiftCurrentFR1.FlowPersistence : removedAfterProceeding
+}
+
+state CoreSwiftCurrentFR2 {
+    state "FlowPersistence" as CoreSwiftCurrentFR2.FlowPersistence : persistWhenSkipped
+}
+
+state UIKitFR3 {
+    state "FlowPersistence" as UIKitFR3.FlowPersistence : removedAfterProceeding
+    state "LaunchStyle" as UIKitFR3.LaunchStyle : navigationStack
+}
+
+state UIKitFR4 {
+    state "FlowPersistence" as UIKitFR4.FlowPersistence : hiddenInitially
+    state "LaunchStyle" as UIKitFR4.LaunchStyle {
+        state "ModalStyle" as UIKitFR4.ModalStyle : fullScreen
+    }
+    UIKitFR4.LaunchStyle : modal
+}
+
+[*] --> CoreSwiftCurrentFR1.shouldLoad
+CoreSwiftCurrentFR1.shouldLoad --> CoreSwiftCurrentFR2.shouldLoad : false
+CoreSwiftCurrentFR2.shouldLoad --> UIKitFR3.shouldLoad : false
+UIKitFR3.shouldLoad --> UIKitFR4.shouldLoad : false
+UIKitFR4.shouldLoad --> DefaultedFR6.shouldLoad : false
+DefaultedFR6.shouldLoad --> [*] : false

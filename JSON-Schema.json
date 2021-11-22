@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "version": {
+        "type": "string"
+      },
+      "sequence": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "flowRepresentableName": {
+                "type": "string"
+              },
+              "flowPersistence": {
+                "type": "object",
+                "properties": {
+                  "style": {
+                    "type": "string"
+                  }
+                },
+                "required": [ "style" ]
+              },
+              "launchStyle": {
+                "type": "object",
+                "properties": {
+                  "style": {
+                    "type": "string"
+                  },
+                  "substyle": {
+                    "type": "string"
+                  }
+                },
+                "required": [ "style" ]
+              }
+            },
+            "required": [ "flowRepresentableName" ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "version",
+      "sequence"
+    ]
+  }
