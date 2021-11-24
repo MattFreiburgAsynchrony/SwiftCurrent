@@ -59,6 +59,7 @@
 		D7226A602678238F0066E9E6 /* SwiftCurrent_UIKit in Frameworks */ = {isa = PBXBuildFile; productRef = D7226A5F2678238F0066E9E6 /* SwiftCurrent_UIKit */; };
 		D73767A926AF5D2D000A6A6E /* TermsOfServiceViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73767A826AF5D2D000A6A6E /* TermsOfServiceViewControllerTests.swift */; };
 		D73767AB26AF625F000A6A6E /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73767AA26AF625F000A6A6E /* TermsOfServiceViewController.swift */; };
+		D7B93D54274EA16D0040768A /* Echo in Frameworks */ = {isa = PBXBuildFile; productRef = D7B93D53274EA16D0040768A /* Echo */; };
 		D7DBD21C26CD969B00F1E39B /* MockOrchestrationResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD20F26CD969B00F1E39B /* MockOrchestrationResponder.swift */; };
 		D7DBD21D26CD969B00F1E39B /* ViewControllerAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD21026CD969B00F1E39B /* ViewControllerAdditions.swift */; };
 		D7DBD21E26CD969B00F1E39B /* AnyWorkflowAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD21126CD969B00F1E39B /* AnyWorkflowAdditions.swift */; };
@@ -183,6 +184,7 @@
 				D7226A5C267820070066E9E6 /* SwiftCurrent in Frameworks */,
 				CAA32F1826BF3F6000DB271E /* SwiftCurrent_SwiftUI in Frameworks */,
 				D7226A602678238F0066E9E6 /* SwiftCurrent_UIKit in Frameworks */,
+				D7B93D54274EA16D0040768A /* Echo in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +445,7 @@
 				D7226A5B267820070066E9E6 /* SwiftCurrent */,
 				D7226A5F2678238F0066E9E6 /* SwiftCurrent_UIKit */,
 				CAA32F1726BF3F6000DB271E /* SwiftCurrent_SwiftUI */,
+				D7B93D53274EA16D0040768A /* Echo */,
 			);
 			productName = SwiftCurrentExample;
 			productReference = CAF5852A256CEE990044C864 /* UIKitExample.app */;
@@ -533,6 +536,7 @@
 				CAF586A0256CF2560044C864 /* XCRemoteSwiftPackageReference "CwlPreconditionTesting" */,
 				CAF58712256CF40C0044C864 /* XCRemoteSwiftPackageReference "UIUTest" */,
 				CA9226F72640724D00BD0366 /* XCRemoteSwiftPackageReference "ExceptionCatcher" */,
+				D7B93D52274EA16D0040768A /* XCRemoteSwiftPackageReference "Echo" */,
 			);
 			productRefGroup = CAF5852B256CEE990044C864 /* Products */;
 			projectDirPath = "";
@@ -1003,6 +1007,14 @@
 				minimumVersion = 1.7.0;
 			};
 		};
+		D7B93D52274EA16D0040768A /* XCRemoteSwiftPackageReference "Echo" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Azoy/Echo.git";
+			requirement = {
+				branch = "swift-5.3";
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1052,6 +1064,11 @@
 		D7226A5F2678238F0066E9E6 /* SwiftCurrent_UIKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SwiftCurrent_UIKit;
+		};
+		D7B93D53274EA16D0040768A /* Echo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7B93D52274EA16D0040768A /* XCRemoteSwiftPackageReference "Echo" */;
+			productName = Echo;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

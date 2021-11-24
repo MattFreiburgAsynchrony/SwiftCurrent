@@ -85,6 +85,7 @@
 		D7A6CE8026E039EE00599824 /* TestEnumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A6CE7F26E039EE00599824 /* TestEnumerations.swift */; };
 		D7A6CE8126E03ADD00599824 /* TestEnumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A6CE7F26E039EE00599824 /* TestEnumerations.swift */; };
 		D7B2E7A2270F6EDD00262519 /* GenericOnboardingViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B2E7A1270F6EDD00262519 /* GenericOnboardingViewTests.swift */; };
+		D7B93D51274D57A50040768A /* initialWorkflow.json in Resources */ = {isa = PBXBuildFile; fileRef = D7B93D50274D57A50040768A /* initialWorkflow.json */; };
 		D7D6048F273F099300F58145 /* Echo in Frameworks */ = {isa = PBXBuildFile; productRef = D7D6048E273F099300F58145 /* Echo */; };
 		D7DBD1FB26CD920700F1E39B /* MockOrchestrationResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD1F526CD920700F1E39B /* MockOrchestrationResponder.swift */; };
 		D7DBD1FC26CD920700F1E39B /* ViewControllerAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DBD1F626CD920700F1E39B /* ViewControllerAdditions.swift */; };
@@ -187,6 +188,7 @@
 		D7A6CE7D26E039C300599824 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		D7A6CE7F26E039EE00599824 /* TestEnumerations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEnumerations.swift; sourceTree = "<group>"; };
 		D7B2E7A1270F6EDD00262519 /* GenericOnboardingViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericOnboardingViewTests.swift; sourceTree = "<group>"; };
+		D7B93D50274D57A50040768A /* initialWorkflow.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = initialWorkflow.json; sourceTree = "<group>"; };
 		D7DBD1F526CD920700F1E39B /* MockOrchestrationResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockOrchestrationResponder.swift; sourceTree = "<group>"; };
 		D7DBD1F626CD920700F1E39B /* ViewControllerAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerAdditions.swift; sourceTree = "<group>"; };
 		D7DBD1F726CD920700F1E39B /* AnyWorkflowAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyWorkflowAdditions.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 				CAC34B4B26A07F830039A373 /* Info.plist */,
 				CAC34B4226A07F830039A373 /* SwiftUIExampleApp.swift */,
 				CAC34B4626A07F830039A373 /* Assets.xcassets */,
+				D7B93D50274D57A50040768A /* initialWorkflow.json */,
 			);
 			path = SwiftUIExample;
 			sourceTree = "<group>";
@@ -637,6 +640,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAC34B4A26A07F830039A373 /* Preview Assets.xcassets in Resources */,
+				D7B93D51274D57A50040768A /* initialWorkflow.json in Resources */,
 				CAC34B4726A07F830039A373 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
