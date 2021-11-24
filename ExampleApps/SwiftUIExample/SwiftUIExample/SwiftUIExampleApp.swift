@@ -12,7 +12,7 @@ import SwiftCurrent_SwiftUI
 
 @main
 struct SwiftUIExampleApp: App {
-    let startingWorkflow: AnyWorkflow
+    var startingWorkflow: AnyWorkflow
 
     init() {
         Container.default.register(UserDefaults.self) { _ in UserDefaults.standard }
@@ -22,22 +22,23 @@ struct SwiftUIExampleApp: App {
             WorkflowSequenceNode(flowRepresentableName: "ContentView"),
         ])
 
-        if let data = try? JSONEncoder().encode(thingToBeJson) {
-            let workflow = try? DataDriven.shared.createWorkflow(from: data)
-            print(workflow)
+        // Option 1
+        if let data = try? JSONEncoder().encode(thingToBeJson),
+            let workflow = try? DataDriven().createWorkflow(from: data, using: EchoThing()) {
+                startingWorkflow = workflow
+                print(workflow)
+
+        } else {
+            startingWorkflow = AnyWorkflow.empty
         }
 
-//        let EFRMs = DataDriven.shared.flowRepresentableViewTypes.compactMap { ($0 as? TylerMetadata.Type)?.getMetadata() }
-
-//        DataDriven.shared.register(EFRMs[0] as! ExtendedFlowRepresentableMetadata, for: String(describing: DataDriven.shared.flowRepresentableViewTypes[0]))
-        print(DataDriven.shared.registryDescription)
-
-        do {
-            startingWorkflow = try DataDriven.shared.getWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"])
-        } catch {
-            let defaultWorkflow = Workflow(ContentView.self)
-            startingWorkflow = AnyWorkflow(defaultWorkflow)
+        // Option 2
+        if let workflow = try? DataDriven().createWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"], using: RegistryThing().registerKnownTypes()) {
+            startingWorkflow = workflow
         }
+
+        // Option 3
+        startingWorkflow = try! DataDriven().createWorkflow(from: ["SwiftCurrentOnboarding", "ContentView"], using: FallbackDataThing())
     }
 
     var body: some Scene {
@@ -45,67 +46,28 @@ struct SwiftUIExampleApp: App {
             if Environment.shouldTest {
                 TestView()
             } else {
-//                WorkflowLauncher(isLaunched: .constant(true)) {
-//                    thenProceed(with: SwiftCurrentOnboarding.self) {
-//                        thenProceed(with: ContentView.self)
-//                            .applyModifiers { $0.transition(.slide) }
-//                    }.applyModifiers { $0.transition(.slide) }
-//                }
                 WorkflowLauncher(isLaunched: .constant(true), workflow: startingWorkflow)
-                .preferredColorScheme(.dark)
+                    .preferredColorScheme(.dark)
             }
         }
     }
 }
 
 import SwiftCurrent
-import Echo
-/// Manages ``FlowRepresentable`` types that will be driven through data.
 open class DataDriven {
-    // I don't like this.
-    static let shared = DataDriven()
+    open func createWorkflow(from json: Data, using aggrigator: FlowRepresentableAggrigator) throws -> AnyWorkflow {
+        guard let data = try? JSONDecoder().decode(WorkflowData.self, from: json) else { throw Error.unknownDataType }
 
-    private var registry1 = [String: ExtendedFlowRepresentableMetadata]()
-
-    // I'm leaning towards this being the preferred registry.
-    private var registry2 = [String: () -> ExtendedFlowRepresentableMetadata]()
-
-    /// Current human readable description of the registry.
-    public var registryDescription: String {
-        var stringy = "Registry contains:\n"
-        for thisKey in registry1.keys {
-            stringy += "  - key: \"\(thisKey)\" : \(registry1[thisKey]!.underlyingTypeDescription)\n"
-        }
-        return stringy
+        return try createWorkflow(from: data, using: aggrigator)
     }
 
-    func register(_ efrm: @escaping @autoclosure () -> ExtendedFlowRepresentableMetadata, for key: String) {
-        registry1[key] = efrm()
-        registry2[key] = efrm
-    }
-
-    func register(key: Any, creating efrm: @escaping @autoclosure () -> ExtendedFlowRepresentableMetadata) {
-        let key = String(describing: key)
-        print("Registering key: \(key)")
-        registry1[key] = efrm()
-        registry2[key] = efrm
-    }
-
-    /// Registers the provided type in the data driven registry.
-    public class func register<FR: FlowRepresentable & View>(type: FR.Type) {
-        let key = String(describing: type)
-        let closure = { return ExtendedFlowRepresentableMetadata(flowRepresentableType: type) }
-
-        // This thing could be a instance method that doesn't go directly to shared.  Maybe it could take in shared, I'm not sure.
-        shared.registry1[key] = closure()
-        shared.registry2[key] = closure
-    }
-
-    func getWorkflow(from types: [String]) throws -> AnyWorkflow {
+    open func createWorkflow(from data: WorkflowData, using aggrigator: FlowRepresentableAggrigator) throws -> AnyWorkflow {
         let workflow = AnyWorkflow.empty
-        for thing in types {
-            if let efrm = registry2[thing] {
-                workflow.append(efrm())
+        let cachedTable = aggrigator.flowRepresentableTypeMap
+
+        for sequence in data.sequence {
+            if let meta = (cachedTable[sequence.flowRepresentableName] as? TylerMetadata.Type)?.getMetadata() {
+                workflow.append(meta)
             } else {
                 throw Error.unregisteredType
             }
@@ -114,60 +76,30 @@ open class DataDriven {
         return workflow
     }
 
-    func createWorkflow(from json: Data) throws -> AnyWorkflow {
-        guard let data = try? JSONDecoder().decode(WorkflowData.self, from: json) else { throw Error.unregisteredType }
+    open func createWorkflow(from types: [String], using aggrigator: FlowRepresentableAggrigator) throws -> AnyWorkflow {
         let workflow = AnyWorkflow.empty
-        let cachedTable = flowRepresentableViewTable
+        let cachedTable = aggrigator.flowRepresentableTypeMap
 
-        for sequence in data.sequence {
-            if let meta = (cachedTable[sequence.flowRepresentableName] as? TylerMetadata.Type)?.getMetadata() {
+        for sequence in types {
+            if let meta = (cachedTable[sequence] as? TylerMetadata.Type)?.getMetadata() {
                 workflow.append(meta)
+            } else {
+                throw Error.unregisteredType
             }
         }
 
         return workflow
     }
 
-    enum Error: Swift.Error {
+    public enum Error: Swift.Error {
+        case unknownDataType
         case unregisteredType
     }
-
-    var flowRepresentableClassTypes: [Any.Type] {
-        types
-            .filter { !$0.flags.isGeneric }
-            .compactMap { $0 as? TypeContextDescriptor }
-            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
-            .compactMap { $0.metadata as? TypeMetadata }
-            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
-            .compactMap { $0.type }
-    }
-
-    private var flowRepresentableViewTable: [String : Any.Type] {
-        types
-            .filter { !$0.flags.isGeneric }
-            .compactMap { $0 as? TypeContextDescriptor }
-            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
-            .compactMap { $0.metadata as? TypeMetadata }
-            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
-            .reduce(into: [:]) { $0[$1.contextDescriptor.name] = $1.type }
-    }
 }
 
-extension ContextDescriptor {
-    var parentModuleDescriptor: ModuleDescriptor? {
-        if parent == nil {
-            if self is ModuleDescriptor {
-                return self as? ModuleDescriptor
-            } else {
-                fatalError("No parent module found for: this thing")
-            }
-        } else {
-            return self.parent?.parentModuleDescriptor
-        }
-    }
-}
-
-struct WorkflowData: Codable {
+// MARK: Codables
+// These should probably be classes so they can be extended
+public struct WorkflowData: Codable {
     let version: String
     let sequence: [WorkflowSequenceNode]
 }
@@ -189,4 +121,77 @@ struct LaunchStyleData: Codable {
 
     let type: String
     var subtype: String? = nil
+}
+
+// MARK: Aggrigators
+public protocol FlowRepresentableAggrigator {
+    var flowRepresentableTypeMap: [String: Any.Type] { get }
+}
+
+import Echo
+public class EchoThing {
+    private static var flowRepresentableMetadata: [TypeMetadata] {
+        types
+            .filter { !$0.flags.isGeneric }
+            .compactMap { $0 as? TypeContextDescriptor }
+            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
+            .compactMap { $0.metadata as? TypeMetadata }
+            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
+    }
+
+    public static var flowRepresentableTypes: [Any.Type] {
+        flowRepresentableMetadata
+            .compactMap { $0.type }
+    }
+
+    public static var flowRepresentableTypeTable: [String : Any.Type] {
+        flowRepresentableMetadata
+            .reduce(into: [:]) { $0[$1.contextDescriptor.name] = $1.type }
+    }
+}
+
+extension EchoThing: FlowRepresentableAggrigator {
+    public var flowRepresentableTypeMap: [String: Any.Type] { EchoThing.flowRepresentableTypeTable }
+}
+
+public class RegistryThing {
+    private var registryTypes = [Any.Type]()
+    private var registryMap = [String: Any.Type]()
+
+    /// Registers the provided type in the data driven registry.
+    public func register<FR: FlowRepresentable>(type: FR.Type) {
+        let key = String(describing: type)
+
+        registryMap[key] = type
+        registryTypes.append(type)
+    }
+
+    /// Current human readable description of the registry.
+    public var registryDescription: String {
+        var stringy = "Registry contains:\n"
+        for thisKey in registryMap.keys {
+            stringy += "  - key: \"\(thisKey)\" : \(String(describing: registryMap[thisKey]))\n"
+        }
+        return stringy
+    }
+}
+
+extension RegistryThing { // Consumer might do something like this in their code
+    open func registerKnownTypes() -> Self {
+        register(type: SwiftCurrentOnboarding.self)
+        register(type: ContentView.self)
+
+        return self
+    }
+}
+
+extension RegistryThing: FlowRepresentableAggrigator {
+    public var flowRepresentableTypeMap: [String: Any.Type] { return registryMap }
+}
+
+class FallbackDataThing: FlowRepresentableAggrigator {
+    public let flowRepresentableTypeMap: [String : Any.Type] = [
+        String(describing: SwiftCurrentOnboarding.self) : SwiftCurrentOnboarding.self,
+        String(describing: ContentView.self) : ContentView.self,
+    ]
 }
