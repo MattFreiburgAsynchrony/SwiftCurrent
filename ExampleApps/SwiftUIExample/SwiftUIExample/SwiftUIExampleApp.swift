@@ -22,6 +22,8 @@ struct SwiftUIExampleApp: App {
 //        DataDriven.shared.register(key: ContentView.self, creating: ExtendedFlowRepresentableMetadata(flowRepresentableType: ContentView.self))
 //        DataDriven.register(type: LoginView.self)
         print(DataDriven.shared.flowRepresentableViewTypes)
+        print(DataDriven.shared.flowRepresentableTypes)
+        print(DataDriven.shared.flowRepresentableTypeTable)
 
         let EFRMs = DataDriven.shared.flowRepresentableViewTypes.compactMap { ($0 as? TylerMetadata.Type)?.getMetadata() }
 
@@ -189,6 +191,26 @@ open class DataDriven {
             .compactMap { $0.metadata as? StructMetadata }
             .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
             .compactMap { $0.type }
+    }
+
+    var flowRepresentableTypes: [Any.Type] {
+        types
+            .filter { !$0.flags.isGeneric }
+            .compactMap { $0 as? TypeContextDescriptor }
+            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
+            .compactMap { $0.metadata as? TypeMetadata }
+            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
+            .compactMap { $0.type }
+    }
+
+    var flowRepresentableTypeTable: [String : Any.Type] {
+        types
+            .filter { !$0.flags.isGeneric }
+            .compactMap { $0 as? TypeContextDescriptor }
+            .compactMap { $0.accessor(MetadataRequest(state: .abstract)) }
+            .compactMap { $0.metadata as? TypeMetadata }
+            .filter { $0.conformances.contains { $0.protocol.name == String(describing: FlowRepresentable.self) }}
+            .reduce(into: [:]) { $0[$1.contextDescriptor.name] = $1.type }
     }
 }
 
