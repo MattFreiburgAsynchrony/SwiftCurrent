@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol TylerMetadata {
+public protocol TylerMetadata { // <----- KEEP : this has simplified things a lot so let's keep this (rename obviously). This may even be the root for which we reflect in Echo.
     static func getMetadata() -> FlowRepresentableMetadata
 }
 

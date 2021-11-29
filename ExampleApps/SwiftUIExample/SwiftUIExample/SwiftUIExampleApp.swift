@@ -124,12 +124,16 @@ struct LaunchStyleData: Codable {
 }
 
 // MARK: Aggrigators
-public protocol FlowRepresentableAggrigator {
+public protocol FlowRepresentableAggrigator { // <--- KEEP : this is I think another key aspect like TylerMetadata. It allows us to have many products.  I'm not sure if a map is still the correct thing, but this works.
     var flowRepresentableTypeMap: [String: Any.Type] { get }
+
+    // Could even be this but this drops its reusability
+//    var tylerMetadataTypeMap: [String: TylerMetadata.Type] { get }
 }
 
+// MARK: Echo product
 import Echo
-public class EchoThing {
+public class EchoThing { // <----- KEEP : This is our reflection thing.  How it gets changed, I'm not sure but the reflection works.  This should be in its own product
     private static var flowRepresentableMetadata: [TypeMetadata] {
         types
             .filter { !$0.flags.isGeneric }
@@ -154,7 +158,8 @@ extension EchoThing: FlowRepresentableAggrigator {
     public var flowRepresentableTypeMap: [String: Any.Type] { EchoThing.flowRepresentableTypeTable }
 }
 
-public class RegistryThing {
+// MARK: Manual product or root of DataDriven?
+public class RegistryThing { // <-- KEEP : I think this is something we could ship with the root data-driven product BECAUSE it provides a no-dependency option for users.
     private var registryTypes = [Any.Type]()
     private var registryMap = [String: Any.Type]()
 
