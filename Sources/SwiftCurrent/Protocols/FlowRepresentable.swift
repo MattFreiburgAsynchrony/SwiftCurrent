@@ -10,6 +10,8 @@ import Foundation
 
 public protocol TylerMetadata { // <----- KEEP : this has simplified things a lot so let's keep this (rename obviously). This may even be the root for which we reflect in Echo.
     static func getMetadata() -> FlowRepresentableMetadata
+    static var name: String { get }
+    static var supportedFeatures: [Any] { get }
 }
 
 /**
@@ -102,6 +104,9 @@ extension FlowRepresentable {
     public static func getMetadata() -> FlowRepresentableMetadata {
         FlowRepresentableMetadata(self) { _ in .default }
     }
+
+    public static var name: String { String(describing: Self.self) }
+    public static var supportedFeatures: [Any] { ["I don't know what this is but something"] }
 
     // No public docs necessary, as this should not be used by consumers.
     // swiftlint:disable:next missing_docs

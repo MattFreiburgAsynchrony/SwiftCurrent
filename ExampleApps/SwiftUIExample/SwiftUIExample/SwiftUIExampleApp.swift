@@ -81,8 +81,9 @@ open class DataDriven {
         let cachedTable = aggrigator.flowRepresentableTypeMap
 
         for sequence in types {
-            if let meta = (cachedTable[sequence] as? TylerMetadata.Type)?.getMetadata() {
-                workflow.append(meta)
+            if let meta = (cachedTable[sequence] as? TylerMetadata.Type) {
+                print("Found fr named: \(meta.name)")
+                workflow.append(meta.getMetadata())
             } else {
                 throw Error.unregisteredType
             }

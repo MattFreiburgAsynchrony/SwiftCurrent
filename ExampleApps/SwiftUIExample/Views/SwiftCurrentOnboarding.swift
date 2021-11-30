@@ -10,6 +10,7 @@ import SwiftUI
 import SwiftCurrent
 
 struct SwiftCurrentOnboarding: View, PassthroughFlowRepresentable {
+    static var name: String { "AppOnboarding for iOS" }
     @AppStorage("OnboardedToSwiftCurrent", store: .fromDI) private var onboardedToSwiftCurrent = false
 
     let inspection = Inspection<Self>() // ViewInspector
