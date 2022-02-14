@@ -20,6 +20,11 @@ custom_categories:
     - FlowRepresentable
     - Workflow
     - PassthroughFlowRepresentable
+- name: Server Driven Workflows
+  children:
+    - WorkflowDecodable
+    - FlowRepresentableAggregator
+    - JSONDecoder
 - name: How to use SwiftCurrent with SwiftUI
   children:
     - Getting Started with SwiftUI
