@@ -1,0 +1,186 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Core") {
+        This tutorial will cover essential concepts and types needed to understand the Core product for SwiftCurrent.  Importantly, Core is devoid of any dependencies and is written in pure Swift without taking dependencies on 3rd party frameworks or on Apple provided libraries that are restricted to certain platforms (UIKit as an example).
+        
+        We have divided this into 2 sections.
+        
+        1) "What is a Workflow?"
+        1) "FlowRepresentables, Orchestration Responder, and Type Erasure"
+        
+        We recommend reading each step in its entirety, then exploring the code provided on the side before moving on to the next step.  At the end, there is an assessment to help reinforce some tricky aspects of Core.
+    }
+    @Section(title: "What is a Workflow?") {
+    
+        @ContentAndMedia {
+            In this section you'll learn what a workflow is under the covers. You'll be walked through the types:
+            
+            - ``SwiftCurrent/LinkedList``
+            - ``SwiftCurrent/LinkedList/Node``
+            - `_WorkflowItem`
+            - ``SwiftCurrent/FlowRepresentableMetadata``
+            - ``SwiftCurrent/AnyWorkflow/PassedArgs``
+            - ``SwiftCurrent/Workflow``
+        }
+        
+        @Steps {
+            @Step {
+                Start with ``SwiftCurrent/LinkedList``.
+                
+                All workflows are doubly linked lists, so this data type is a great starting point. You'll notice that it partially mimics Swift sequence types, but is not a `Struct`. This is deliberate. We rely on inheritance logic and did not design this type so that anyone could use LinkedList outside of SwiftCurrent.
+                
+                @Code(name: "LinkedList.swift", file: "LinkedList.swift", reset: true)
+            }
+            
+            @Step {
+                ``SwiftCurrent/LinkedList/Node`` is the type used for the nodes in the linked list.
+                
+                Like any node in a linked list, ``SwiftCurrent/LinkedList/Node`` holds a reference to the value and the previous and next nodes in the linked list. It also has methods for traversing the list, starting at the current node.
+                
+                @Code(name: "LinkedListNode.swift", file: "LinkedListNode.swift", reset: true)
+            }
+            
+            @Step {
+                `_WorkflowItem` is the value type for each node.
+                
+                Because ``SwiftCurrent/Workflow`` is a doubly linked list, each node in a workflow needs a value type. This value type is `_WorkflowItem`. This type holds onto 2 important things. **First,** ``SwiftCurrent/FlowRepresentableMetadata`` for this node. We will explore this type in the next step. **Second,** an instance of the ``SwiftCurrent/AnyFlowRepresentable`` if one was loaded.
+                
+                @Code(name: "_WorkflowItem.swift", file: "_WorkflowItem.swift", reset: true)
+            }
+            
+            @Step {
+                ``SwiftCurrent/FlowRepresentableMetadata`` generates the instances used in a ``SwiftCurrent/Workflow``.
+                
+                Because an element in the workflow may or may not exist based on state conditions, a type is needed to hold onto the factory and metadata for the element. ``SwiftCurrent/FlowRepresentableMetadata`` holds onto that factory to create ``SwiftCurrent/AnyFlowRepresentable`` references from passed in arguments, and it also holds onto the peripheral metadata like the persistence and launch style of a given ``SwiftCurrent/FlowRepresentable``.
+                
+                @Code(name: "FlowRepresentableMetadata.swift", file: "FlowRepresentableMetadata.swift", reset: true)
+            }
+            
+            @Step {
+                ``SwiftCurrent/AnyWorkflow/PassedArgs`` is the data type used when generating instances in a ``SwiftCurrent/Workflow``.
+                
+                The factory and persistence on ``SwiftCurrent/FlowRepresentableMetadata`` require an ``SwiftCurrent/AnyWorkflow/PassedArgs`` type. This type is almost identical to `Optional` but was specifically created to remove ambiguity. If we had used `Optional`, it would've been unclear to consumers if an item in a workflow was passing `nil` as an argument, or if there were no arguments passed.
+                
+                @Code(name: "PassedArgs.swift", file: "PassedArgs.swift", reset: true)
+            }
+            
+            @Step {
+                Finally, ``SwiftCurrent/Workflow`` controls the high-level traversal through the linked list.
+                
+                The actions that ``SwiftCurrent/Workflow`` handles are: Launching, Proceeding, and Backing Up.  **Launching** involves loading the first ``SwiftCurrent/FlowRepresentable`` that should load given the launch arguments. **Proceeding** loads the next ``SwiftCurrent/FlowRepresentable`` that should load based on input from the previous item or launch arguments. If no screen should load then the workflow is completed. **Backing Up** finds the last loaded ``SwiftCurrent/FlowRepresentable`` or throws if there is none.
+                                
+                @Code(name: "Workflow.swift", file: "Workflow.swift", reset: true)
+            }
+            
+            @Step {
+                Additionally, ``SwiftCurrent/Workflow`` uses metadata to modify what happens after traversing. 
+                
+                ``SwiftCurrent/FlowPersistence`` metadata allows a ``SwiftCurrent/FlowRepresentable`` that has a ``SwiftCurrent/FlowRepresentable/shouldLoad()-cmx5`` returning `false` to still mutate data.
+
+                @Code(name: "Workflow.swift", file: "Workflow.swift", reset: false)                
+            }
+        }
+    }
+    
+    @Section(title: "FlowRepresentables, Orchestration Responder, and Type Erasure") {
+        
+        @ContentAndMedia {
+            In this section you'll learn about FlowRepresentable, OrchestrationResponder, and our erased types.
+        }
+        
+        @Steps {
+            @Step {
+                A `FlowRepresentable` is user-supplied. It's got an input, output, and shouldLoad method that Workflow depends on. In practice these end up being views most of the time. The `shouldLoad` method indicates whether the workflow should create and retain a new instance of this `FlowRepresentable`. 
+                
+                The Input and Output are strong types indicating what kind of data can be passed forward to the next `FlowRepresentable`. Since all args `Workflow` knows about are `AnyWorkflow.PassedArgs` there is a runtime check when an item proceeds using `proceedInWorkflow`.
+                
+                @Code(name: "FlowRepresentable.swift", file: "FlowRepresentable.swift", reset: true)
+            }
+            
+            @Step {
+                Workflow can be thought of as an orchestration engine. This is fairly typical for workflow systems. Workflows have several actions, launching, proceeding, backing up, etc... Those actions are all delegated to an OrchestrationResponder.
+                
+                You'll notice that the OrchestrationResponder is little more than something capable of receiving those events. We've built OrchestrationResponders for UIKit and SwiftUI.
+                
+                @Code(name: "OrchestrationResponder.swift", file: "OrchestrationResponder.swift", reset: true)
+            }
+            
+            @Step {
+                Workflow is highly dependent on type erasure. It's the only way to have a sequence of `FlowRepresentable`s. `AnyFlowRepresentable` not only erases the `FlowRepresentable` type, but it can also appropriately cast passed arguments and create a `FlowRepresentable` using it's `_factory` methods.
+                
+                @Code(name: "AnyFlowRepresentable.swift", file: "AnyFlowRepresentable.swift", reset: true)
+            }
+            
+            @Step {
+                AnyWorkflow is just an erased version of Workflow. Workflow really only has type information so that it can enforce compiler safety on calls to `thenProceed`. This erased version allows consumers to easily store workflows, or pass them around between parts of an application.
+                
+                @Code(name: "AnyWorkflow.swift", file: "AnyWorkflow.swift", reset: true)
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the difference between a `FlowRepresentable` that has a `WorkflowInput` of `Any?` and a `FlowRepresentable` that has a `WorkflowInput` of `AnyWorkflow.PassedArgs`?
+
+            @Choice(isCorrect: false) {
+                `Any?` means any kind of data, including no data, can be passed. `AnyWorkflow.PassedArgs` is equivalent, it's just not an optional.
+
+                @Justification(reaction: "Try again!") {
+                    `AnyWorkflow.PassedArgs` was deliberately built because an Optional wasn't enough to differentiate between "No data" and "Data, but it's nil".
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                `Any?` means any kind of data, including nil, can be passed to this `FlowRepresentable`. However, *something* must be passed forward. `AnyWorkflow.PassedArgs` means that some data (which can be nil) or no data at all (`AnyWorkflow.PassedArgs.none`) can be passed.
+
+                @Justification(reaction: "That's right!") {
+                    `AnyWorkflow.PassedArgs` is the only way to have a `FlowRepresentable` truly be able to interpret any situation, data being passed or no data being passed.
+                }
+            }
+
+            @Choice(isCorrect: false) {
+                `Any?` is broad enough to also include `AnyWorkflow.PassedArgs`. It's just a Swift way of saying "it doesn't matter what gets passed". `AnyWorkflow.PassedArgs` is more narrow, it means only certain `FlowRepresentable` types can pass data to this `FlowRepresentable.`
+                
+                @Justification(reaction: "Try again!") {
+                    `AnyWorkflow.PassedArgs` was deliberately built because an Optional wasn't enough to differentiate between "No data" and "Data, but it's nil". While convention may lead you to believe that `Any?` is more broad than `AnyWorkflow.PassedArgs` that's not true in this context.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            A ``Workflow`` is a ``LinkedList``. What is the generic type of ``LinkedList.Node`` in a ``Workflow``?
+            
+            @Choice(isCorrect: false) {
+                ``SwiftCurrent/LinkedList/Node``
+
+                @Justification(reaction: "Sorry, try again.") {
+                    ``SwiftCurrent/LinkedList/Node`` is the type for the linked list node. What is the value type that the ``SwiftCurrent/LinkedList/Node`` holds on to?
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `_WorkflowItem`
+
+                @Justification(reaction: "Correct!") {
+                    `_WorkflowItem` is the node's value type in the linked list.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ``SwiftCurrent/FlowRepresentableMetadata``
+
+                @Justification(reaction: "Sorry, try again.") {
+                    ``SwiftCurrent/FlowRepresentableMetadata`` holds the factory to generate ``SwiftCurrent/FlowRepresentable`` and metadata that modifies effects of traversing the linked list.  What holds on to the ``SwiftCurrent/FlowRepresentableMetadata``?
+                }
+            }
+
+            @Choice(isCorrect: false) {
+                ``SwiftCurrent/FlowRepresentable``
+
+                @Justification(reaction: "Sorry, try again.") {
+                    The types that implement ``SwiftCurrent/FlowRepresentable`` are used to define a Workflow. This type is used in a ``SwiftCurrent/FlowRepresentableMetadata`` to generate instances.
+                }
+            }
+        }
+    }
+}

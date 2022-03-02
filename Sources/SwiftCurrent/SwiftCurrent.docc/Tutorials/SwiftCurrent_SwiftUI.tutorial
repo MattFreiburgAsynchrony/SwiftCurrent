@@ -1,0 +1,40 @@
+@Tutorial(time: 25) {
+    @Intro(title: "SwiftCurrent with SwiftUI") {
+        SwiftUI text        
+    }
+    
+    @Section(title: "SwiftUI") {
+        @ContentAndMedia {
+            In this section you'll see the components that SwiftCurrent utilizes to support SwiftUI applications.
+        }
+        
+        @Steps {
+            @Step {
+                Start with Launcher. The Launcher is responsible for calling launch on and passing the launchArgs to the workflow. 
+
+                
+                @Code(name: "Launcher.swift", file: "Launcher.swift", reset: true)
+            }
+            
+            @Step {
+                The WorkflowViewModel acts as the OrchestrationResponder for the SwiftUI portions of the Library. It is responsible for the launch, proceed, backUp, abandon, and complete functions of the workflow. 
+                
+                @Code(name: "WorkflowViewModel.swift", file: "WorkflowViewModel.swift", reset: true)
+            }
+            
+            @Step {
+                WorkflowItem 
+                
+                @Code(name: "WorkflowItem.swift", file: "WorkflowItem.swift", reset: true)
+            }
+            
+            @Step {
+                WorkflowLauncher 
+                
+                @Code(name: "WorkflowLauncher.swift", file: "WorkflowLauncher.swift", reset: true)
+            }
+
+        }
+    }
+    
+}
