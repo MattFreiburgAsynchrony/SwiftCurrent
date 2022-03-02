@@ -75,7 +75,7 @@ jobs:
                 echo "✅ Documentation for "$tag" already exists.";
             else 
                 git checkout "$tag";
-                mkdir -p Sources/SwiftCurrent/SwiftCurrent.docc;
+                mkdir -p Sources/SwiftCurrent/Documentation.docc;
                 export DOCC_HTML_DIR="$(pwd)/swift-docc-render/dist";
 
                 rm -rf .build/symbol-graphs;
@@ -88,7 +88,7 @@ jobs:
                   -emit-symbol-graph-dir \
                   -Xswiftc \
                   .build/symbol-graphs \
-                  && swift-docc/.build/release/docc convert Sources/SwiftCurrent/SwiftCurrent.docc \
+                  && swift-docc/.build/release/docc convert Sources/SwiftCurrent/Documentation.docc \
                     --fallback-display-name SwiftCurrent \
                     --fallback-bundle-identifier com.wwt.SwiftCurrent \
                     --fallback-bundle-version 0.0.0 \
