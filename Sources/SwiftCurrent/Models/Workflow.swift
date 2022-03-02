@@ -5,6 +5,9 @@
 //  Created by Tyler Thompson on 8/26/19.
 //  Copyright © 2021 WWT and Tyler Thompson. All rights reserved.
 //
+//  swiftlint:disable file_length
+
+import Foundation
 
 /**
  A doubly linked list of `FlowRepresentableMetadata`s; used to define a process.
