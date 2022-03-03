@@ -93,8 +93,6 @@ jobs:
                     --fallback-bundle-version 0.0.0 \
                     --additional-symbol-graph-dir \
                     .build/symbol-graphs \
-                    --additional-symbol-graph-dir \
-                    x86_64-apple-ios15.2-simulator \
                     --transform-for-static-hosting \
                     --hosting-base-path /SwiftCurrent/"$tag" \
                     --output-path docs-out/"$tag" \
