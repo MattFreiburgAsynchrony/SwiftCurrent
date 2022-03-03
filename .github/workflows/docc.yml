@@ -85,7 +85,8 @@ jobs:
                   --target SwiftCurrent --target SwiftCurrent_SwiftUI \
                   -Xswiftc -emit-symbol-graph \
                   -Xswiftc -emit-symbol-graph-dir \
-                  -Xswiftc x86_64-apple-ios15.2-simulator \
+                  -Xswiftc -target \
+                  -Xswiftc x86_64-apple-ios15.2-simulator \              
                   -Xswiftc .build/symbol-graphs \
                   && swift-docc/.build/release/docc convert Sources/SwiftCurrent/Documentation.docc \
                     --fallback-display-name SwiftCurrent \
