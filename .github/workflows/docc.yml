@@ -83,11 +83,11 @@ jobs:
                 mkdir -p x86_64-apple-ios15.2-simulator;
                 swift build \
                   --target SwiftCurrent --target SwiftCurrent_SwiftUI \
+                  -Xswiftc -target \
+                  -Xswiftc x86_64-apple-ios15.2-simulator \              
                   -Xswiftc -emit-symbol-graph \
                   -Xswiftc -emit-symbol-graph-dir \
                   -Xswiftc .build/symbol-graphs \
-                  -Xswiftc -target \
-                  -Xswiftc x86_64-apple-ios15.2-simulator \              
                   && swift-docc/.build/release/docc convert Sources/SwiftCurrent/Documentation.docc \
                     --fallback-display-name SwiftCurrent \
                     --fallback-bundle-identifier com.wwt.SwiftCurrent \
