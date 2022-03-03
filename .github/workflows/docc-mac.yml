@@ -49,7 +49,7 @@ jobs:
     - name: Fix permissions
       run: 'sudo chown --recursive $USER docs-out'
       
-    - name Publish documentation to GitHubPages
+    - name: Publish documentation to GitHubPages
       uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
         branch: gh-pages
