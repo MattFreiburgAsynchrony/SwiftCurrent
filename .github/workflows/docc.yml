@@ -82,7 +82,7 @@ jobs:
                 mkdir -p .build/symbol-graphs;
                 mkdir -p x86_64-apple-ios15.2-simulator;
                 swift build \
-                  --target SwiftCurrent --target SwiftCurrent_SwiftUI \
+                  --target SwiftCurrent \
                   -Xswiftc -emit-symbol-graph \
                   -Xswiftc -emit-symbol-graph-dir \
                   -Xswiftc .build/symbol-graphs \
