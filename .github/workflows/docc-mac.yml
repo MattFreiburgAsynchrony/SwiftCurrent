@@ -1,0 +1,57 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '13.3-beta'
+        
+    - name: Checkout Package
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        
+    - name: Checkout gh-pages Branch
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+        path: docs-out
+        
+    - name: Build documentation
+      run: >
+        rm -rf docs-out/.git;
+        rm -rf docs-out/main;
+        
+        for target in $(echo "SwiftCurrent"; echo "SwiftCurrent_SwiftUI");
+        do
+        
+          echo "Generating documentation for "$target".";
+          git checkout main;
+
+          swift package \
+            --allow-writing-to-directory docs-out/main \
+            generate-documentation \
+            --target "$target" \
+            --disable-indexing \
+            --transform-for-static-hosting \
+            --hosting-base-path SwiftCurrent/main 
+            --output-path docs-out/main
+        done
+        
+    - name: Fix permissions
+      run: 'sudo chown --recursive $USER docs-out'
+      
+    - name Publish documentation to GitHubPages
+      uses: JamesIves/github-pages-deploy-action@4.1.7
+      with:
+        branch: gh-pages
+        folder: docs-out
+        single-commit: true
